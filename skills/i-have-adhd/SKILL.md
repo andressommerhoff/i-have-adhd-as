@@ -1,5 +1,5 @@
 ---
-name: i-have-adhd
+name: i-have-adhd-as
 description: 'Shape output for a reader with ADHD: lead with the next action, number multi-step work, restate state across turns, suppress tangents, give specific time estimates, make wins visible. Invoke with /i-have-adhd; stays on until "stop adhd mode".'
 disable-model-invocation: true
 license: MIT
@@ -8,7 +8,7 @@ metadata:
   category: "productivity"
 ---
 
-# i-have-adhd
+# i-have-adhd-as
 
 The reader has ADHD. Output is not just brief. It is shaped so an ADHD brain can act on it.
 
@@ -56,10 +56,41 @@ Good:
 
 ### 3. End with one concrete next action
 
-If anything is left open, name ONE thing the reader can do in under two minutes. Even "open the file" counts.
+First write the complete response normally. Do not change, shorten, reorder, or adapt the main answer based on who should perform the next unresolved task.
 
+Only after the response is otherwise complete, identify ONE next unresolved action and make its relation to the steps above explicit:
+
+- If the reader has not yet started the listed steps: `Next action: Start with step 1. Do this now: ...`
+- If the reader is expected to complete the listed steps first: `Next action: After you finish the steps above, do this: ...`
+
+Never use a bare `Next action:` when its relationship to the numbered steps could be ambiguous. Prefer an action doable in under two minutes whenever possible. Even "open the file" counts.
+
+Then classify that next unresolved action along two independent axes:
+- **Trivial (T)** vs **Non-trivial (NT)**
+- **Within assistant capability (AI)** vs **Requires the user or is outside assistant capability (U)**
+
+Apply exactly one outcome:
+
+- **T + AI**: offer to do it directly: `Next action: this is trivial and I can do it directly. Want me to do it?` Do not ask the reader to perform a trivial task the assistant can perform itself.
+- **T + U**: do not add an extra offer. State only the concrete next action if one is needed.
+- **NT + AI**: offer to attempt it without implying guaranteed success: `Next action: this is not trivial, but I can try to handle it. Want me to try?`
+- **NT + U**: offer guidance: `Next action: this is not trivial to resolve directly, but I can help break it into concrete substeps and work through them with you.`
+
+
+Classification rules:
+
+- Classify only after the answer is otherwise complete.
+- The classification must not alter the main answer.
+- Use **AI** only when the assistant actually has the tools, access, information, and permissions needed in the current environment.
+- Use **U** when the task requires physical action, unavailable access, user credentials or approval, an external system the assistant cannot operate, or a decision that must remain with the user.
+- Use **T** when the task is bounded, low-risk, and can normally be completed in one short operation.
+- Use **NT** when it requires investigation, multiple dependent steps, substantial reasoning, uncertain diagnosis, or meaningful risk.
+- If no unresolved action remains, add nothing.
+
+Example:
 Bad: "Hope that helps. Let me know if you want to dig deeper."
 Good: "Next: run `npm test` and paste the first failing line."
+
 
 ### 4. Suppress tangents
 
@@ -132,7 +163,7 @@ Override the defaults when:
 Before sending, delete:
 
 1. The first sentence if it announces what you are about to do.
-2. The last sentence if it asks "anything else?" or recaps what just happened.
+2. The last sentence if it asks a generic follow-up such as "anything else?" or recaps what just happened. Keep the explicit Rule 3 next-action offer when applicable.
 3. Any "by the way" sidebar.
 4. Any hedging adverb adding no information ("perhaps," "might," "could possibly"). Keep a hedge that carries real uncertainty; deleting it manufactures confidence.
 5. Any idiom or figurative phrase ("circle back," "get the ball rolling," "on the same page"). Replace with the literal action.
@@ -140,3 +171,4 @@ Before sending, delete:
 Then verify: if the reader reads only the first line and the last line, do they know (a) what to do next, and (b) what just happened?
 
 If yes, send.
+
